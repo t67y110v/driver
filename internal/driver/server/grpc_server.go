@@ -7,7 +7,6 @@ import (
 
 	"github.com/t67y110v/driver/internal/driver/config"
 	"github.com/t67y110v/driver/internal/driver/logging"
-	"github.com/t67y110v/driver/pkg/driver"
 	"google.golang.org/grpc"
 )
 
@@ -23,9 +22,8 @@ func Start(config *config.Config) error {
 }
 
 func (s *Server) ListenAndServe(ctx context.Context) error {
-	serv := grpc.NewServer()
 
-	driver.RegisterApiCallerScaleServer(serv, s.handlres)
+	serv := grpc.NewServer()
 
 	lisAddr := fmt.Sprintf("0.0.0.0:%s", s.config.ServerPort)
 
