@@ -1,19 +1,16 @@
 package handlers
 
 import (
-	"context"
-	"fmt"
 	"sync"
 
 	"github.com/t67y110v/driver/internal/driver/config"
 	"github.com/t67y110v/driver/internal/driver/logging"
 	"github.com/t67y110v/driver/internal/driver/scale"
-	"github.com/t67y110v/driver/pkg/driver"
-	"google.golang.org/grpc"
+	pb "github.com/t67y110v/driver/pkg/driver"
 )
 
 type ScalesHandler struct {
-	driver.UnimplementedApiCallerScaleServer
+	pb.ApiCallerScaleClient
 	logger *logging.Logger
 	config *config.Config
 	scale  *scale.Scale
@@ -32,10 +29,14 @@ func New(c *config.Config, l *logging.Logger) *ScalesHandler {
 	return h
 }
 
-func newConnection(c config.Config, ctx context.Context) (*grpc.ClientConn, error) {
-	conn, err := grpc.DialContext(ctx, fmt.Sprintf("%s:%s", c.ScaleIP, c.ScalePort))
-	if err != nil {
-		return nil, err
-	}
-	return conn, nil
-}
+// func newClient(c config.Config, ctx context.Context) (pb.ApiCallerScaleClient, error) {
+
+// 	conn, err := grpc.Dial(fmt.Sprintf("%s:%s", c.ScaleIP, c.ScalePort))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	client := pb.NewApiCallerScaleClient(conn)
+
+// 	return client, nil
+// }
