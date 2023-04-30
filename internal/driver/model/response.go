@@ -39,24 +39,12 @@ type GetMassaResponse struct {
 	Zero     bool
 }
 
-type GetNameResponse struct {
-	Response
-	ScalesID uint32
-	Name     string
-}
-
-type GetWifiIpResponse struct {
-	Response
-	Ip      [4]byte
-	Mask    [4]byte
-	Gateway [4]byte
-	IpAP    [4]byte
-	Port    uint16
-}
-
 type SetTareResponse struct {
 	Response
-	Tare [4]byte
+}
+
+type SetTareZeroResponse struct {
+	Response
 }
 
 func (r *RawResponse) Get(n int) []byte {

@@ -27,3 +27,11 @@ var Errors = map[byte]string{
 	0x19: "CMD_GET_NAME",
 	0xF0: "CMD_GET_NAME",
 }
+
+var Responses = map[string]byte{
+	"CMD_ACK_SET_TARE": 0x12,
+	"CMD_NACK_TARE":    0x15,
+	"CMD_ACK_SET":      0x27,
+	"CMD_ERROR":        0x15,
+	"CMD_ACK_MASSA":    0x24,
+}
