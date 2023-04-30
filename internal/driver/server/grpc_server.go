@@ -25,7 +25,7 @@ func (s *Server) ListenAndServe(ctx context.Context) error {
 
 	serv := grpc.NewServer()
 
-	lisAddr := fmt.Sprintf("0.0.0.0:%s", s.config.ServerPort)
+	lisAddr := fmt.Sprintf("%s:%s", s.config.ServerIP, s.config.ServerPort)
 
 	lis, err := net.Listen("tcp", lisAddr)
 	if err != nil {

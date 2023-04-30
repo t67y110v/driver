@@ -1,4 +1,4 @@
-package scale
+package converter
 
 var Commands = map[string]byte{
 	"CMD_GET_NAME":     0x20,
@@ -14,18 +14,18 @@ var Commands = map[string]byte{
 }
 
 var Errors = map[byte]string{
-	0x07: "CMD_GET_NAME",
-	0x08: "CMD_GET_NAME",
-	0x09: "CMD_GET_NAME",
-	0x0A: "CMD_GET_NAME",
-	0x0B: "CMD_GET_NAME",
-	0x10: "CMD_GET_NAME",
-	0x11: "CMD_GET_NAME",
-	0x15: "CMD_GET_NAME",
-	0x17: "CMD_GET_NAME",
-	0x18: "CMD_GET_NAME",
-	0x19: "CMD_GET_NAME",
-	0xF0: "CMD_GET_NAME",
+	0x07: "CMD_ERROR",
+	0x08: "CMD_ERROR",
+	0x09: "CMD_ERROR",
+	0x0A: "CMD_ERROR",
+	0x0B: "CMD_ERROR",
+	0x10: "CMD_ERROR",
+	0x11: "CMD_ERROR",
+	0x15: "CMD_ERROR",
+	0x17: "CMD_ERROR",
+	0x18: "CMD_ERROR",
+	0x19: "CMD_ERROR",
+	0xF0: "CMD_ERROR",
 }
 
 var Responses = map[string]byte{

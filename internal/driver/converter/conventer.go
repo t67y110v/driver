@@ -1,15 +1,8 @@
-package scale
+package converter
 
 import "encoding/binary"
 
-type Scale struct {
-}
-
-func NewScale() *Scale {
-	return &Scale{}
-}
-
-func (s *Scale) CRC16(crc uint16, buf []byte, len uint16) uint16 {
+func CRC16(crc uint16, buf []byte, len uint16) uint16 {
 	var bits, k, a, temp uint16
 
 	for k = 0; k < len; k++ {
@@ -27,7 +20,7 @@ func (s *Scale) CRC16(crc uint16, buf []byte, len uint16) uint16 {
 	}
 	return crc
 }
-func (s *Scale) MakeMessage(data []byte) []byte {
+func MakeMessage(data []byte) []byte {
 	var result []byte
 
 	result = append(result, []byte{0xF8, 0x55, 0xCE}...)
@@ -39,13 +32,13 @@ func (s *Scale) MakeMessage(data []byte) []byte {
 	result = append(result, data...)
 
 	crcBytes := make([]byte, 2)
-	binary.LittleEndian.PutUint16(crcBytes, s.CRC16(0, data, uint16(len(data))))
+	binary.LittleEndian.PutUint16(crcBytes, CRC16(0, data, uint16(len(data))))
 	result = append(result, crcBytes...)
 
 	return result
 }
 
-func (s *Scale) MakeMessagefForSetValue(data []byte, value []byte) []byte {
+func MakeMessagefForSetValue(data []byte, value []byte) []byte {
 	var result []byte
 
 	result = append(result, []byte{0xF8, 0x55, 0xCE}...)
@@ -59,7 +52,7 @@ func (s *Scale) MakeMessagefForSetValue(data []byte, value []byte) []byte {
 	result = append(result, value...)
 
 	crcBytes := make([]byte, 2)
-	binary.LittleEndian.PutUint16(crcBytes, s.CRC16(0, data, uint16(len(data))))
+	binary.LittleEndian.PutUint16(crcBytes, CRC16(0, data, uint16(len(data))))
 	result = append(result, crcBytes...)
 
 	return result

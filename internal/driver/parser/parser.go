@@ -7,7 +7,7 @@ import (
 	"github.com/t67y110v/driver/internal/driver/model"
 )
 
-func FillResponseStruct(raw model.RawResponse, st reflect.Value) {
+func MakeResponse(raw model.RawResponse, st reflect.Value) {
 	raw.Offset = 6
 
 	for i := 0; i < st.NumField(); i++ {
@@ -17,22 +17,23 @@ func FillResponseStruct(raw model.RawResponse, st reflect.Value) {
 		}
 
 		var tmp reflect.Value
+	SWITCH:
 
 		switch field.Kind() {
 		case reflect.Uint32:
 			tmp = reflect.ValueOf(binary.LittleEndian.Uint32(raw.Get(4)))
-			break
+			break SWITCH
 		case reflect.Uint16:
 			tmp = reflect.ValueOf(binary.LittleEndian.Uint16(raw.Get(2)))
-			break
+			break SWITCH
 		case reflect.Uint8:
 			t := raw.Get(1)[0]
 			tmp = reflect.ValueOf(t)
-			break
+			break SWITCH
 		case reflect.Bool:
 			t := raw.Get(1)[0] == 1
 			tmp = reflect.ValueOf(t)
-			break
+			break SWITCH
 		case reflect.String:
 			pair := raw.Get(2)
 			var slice []byte
@@ -42,14 +43,14 @@ func FillResponseStruct(raw model.RawResponse, st reflect.Value) {
 				pair[1] = raw.Get(1)[0]
 			}
 			tmp = reflect.ValueOf(string(slice))
-			break
+			break SWITCH
 		case reflect.Array:
 			slice := raw.Get(field.Cap())
 			tmp = reflect.New(field.Type()).Elem()
 			for i := 0; i < field.Cap(); i++ {
 				tmp.Index(i).Set(reflect.ValueOf(slice[i]))
 			}
-			break
+			break SWITCH
 		}
 
 		field.Set(tmp)

@@ -5,7 +5,6 @@ import (
 
 	"github.com/t67y110v/driver/internal/driver/config"
 	"github.com/t67y110v/driver/internal/driver/logging"
-	"github.com/t67y110v/driver/internal/driver/scale"
 	pb "github.com/t67y110v/driver/pkg/driver"
 )
 
@@ -13,7 +12,6 @@ type ScalesHandler struct {
 	pb.ApiCallerScaleClient
 	logger *logging.Logger
 	config *config.Config
-	scale  *scale.Scale
 	mu     *sync.RWMutex
 }
 
@@ -22,8 +20,8 @@ func New(c *config.Config, l *logging.Logger) *ScalesHandler {
 	h := &ScalesHandler{
 		logger: l,
 		config: c,
-		scale:  scale.NewScale(),
-		mu:     &sync.RWMutex{},
+
+		mu: &sync.RWMutex{},
 	}
 
 	return h

@@ -8,15 +8,9 @@ import (
 	"reflect"
 	"time"
 
-	// "io"
-	// "reflect"
-
-	// "github.com/t67y110v/driver/internal/driver/model"
-	// "github.com/t67y110v/driver/internal/driver/parser"
-	// "github.com/t67y110v/driver/internal/driver/scale"
+	"github.com/t67y110v/driver/internal/driver/converter"
 	"github.com/t67y110v/driver/internal/driver/model"
 	"github.com/t67y110v/driver/internal/driver/parser"
-	"github.com/t67y110v/driver/internal/driver/scale"
 	pb "github.com/t67y110v/driver/pkg/driver"
 	"google.golang.org/grpc"
 )
@@ -39,6 +33,8 @@ func (s *ScalesHandler) Example() {
 }
 
 func (h *ScalesHandler) ScalesMessageOutChannel(client pb.ApiCallerScaleClient) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	stream, err := client.ScalesMessageOutChannel(ctx)
@@ -63,9 +59,9 @@ func (h *ScalesHandler) ScalesMessageOutChannel(client pb.ApiCallerScaleClient) 
 			if err != nil {
 				return
 			}
-			parser.FillResponseStruct(str.Raw(), reflect.ValueOf(&str).Elem())
+			parser.MakeResponse(str.Raw(), reflect.ValueOf(&str).Elem())
 
-			if str.Raw().Meta.CommandCode != scale.Responses["CMD_ERROR"] {
+			if str.Raw().Meta.CommandCode != converter.Responses["CMD_ERROR"] {
 				h.logger.Printf("Code :%s\n", str.Raw().Meta.CommandCode)
 			} else {
 				h.logger.Println("command execution error: unable to install tare")
@@ -90,11 +86,11 @@ func (h *ScalesHandler) SetTare(client pb.ApiCallerScaleClient) {
 	if err != nil {
 		return
 	}
-	parser.FillResponseStruct(str.Raw(), reflect.ValueOf(&str).Elem())
+	parser.MakeResponse(str.Raw(), reflect.ValueOf(&str).Elem())
 
-	if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_ACK_SET_TARE"] {
+	if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_ACK_SET_TARE"] {
 		h.logger.Println("Set tare command completed successfully")
-	} else if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_NACK_TARE"] {
+	} else if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_NACK_TARE"] {
 		h.logger.Println("command execution error: unable to install tare")
 	}
 
@@ -105,7 +101,7 @@ func (h *ScalesHandler) SetTareValue(client pb.ApiCallerScaleClient, value *pb.R
 	defer cancel()
 	var tareValue int64 = 1500
 	var tareValueBytes []byte = big.NewInt(tareValue).Bytes()
-	req := &pb.RequestTareValue{Message: string(h.scale.MakeMessagefForSetValue([]byte{scale.Commands["CMD_SET_TARE"]}, tareValueBytes))}
+	req := &pb.RequestTareValue{Message: string(converter.MakeMessagefForSetValue([]byte{converter.Commands["CMD_SET_TARE"]}, tareValueBytes))}
 
 	resp, err := client.SetTareValue(ctx, req)
 	if err != nil {
@@ -117,10 +113,10 @@ func (h *ScalesHandler) SetTareValue(client pb.ApiCallerScaleClient, value *pb.R
 	if err != nil {
 		return
 	}
-	parser.FillResponseStruct(str.Raw(), reflect.ValueOf(&str).Elem())
-	if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_ACK_SET_TARE"] {
+	parser.MakeResponse(str.Raw(), reflect.ValueOf(&str).Elem())
+	if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_ACK_SET_TARE"] {
 		h.logger.Printf("Set tare command completed successfully, value that is set to %d\n", tareValue)
-	} else if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_NACK_TARE"] {
+	} else if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_NACK_TARE"] {
 		h.logger.Println("command execution error: unable to install tare")
 	}
 
@@ -139,10 +135,10 @@ func (h *ScalesHandler) SetZero(client pb.ApiCallerScaleClient) {
 	if err != nil {
 		return
 	}
-	parser.FillResponseStruct(str.Raw(), reflect.ValueOf(&str).Elem())
-	if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_ACK_SET"] {
+	parser.MakeResponse(str.Raw(), reflect.ValueOf(&str).Elem())
+	if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_ACK_SET"] {
 		h.logger.Println("Set tare command completed successfully, value that is set to zero")
-	} else if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_ERROR"] {
+	} else if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_ERROR"] {
 		h.logger.Println("command execution error: unable to install tare")
 	}
 
@@ -161,10 +157,10 @@ func (h *ScalesHandler) GetInstantWeight(client pb.ApiCallerScaleClient) {
 	if err != nil {
 		return
 	}
-	parser.FillResponseStruct(str.Raw(), reflect.ValueOf(&str).Elem())
-	if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_ACK_MASSA"] {
+	parser.MakeResponse(str.Raw(), reflect.ValueOf(&str).Elem())
+	if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_ACK_MASSA"] {
 		h.logger.Printf("Get massa command completed successfully, weight = %d, stable = %d, net = %d, zero =%d", str.Weight, str.Stable, str.Net, str.Zero)
-	} else if str.Response.Raw().Meta.CommandCode == scale.Responses["CMD_ERROR"] {
+	} else if str.Response.Raw().Meta.CommandCode == converter.Responses["CMD_ERROR"] {
 		h.logger.Println("command execution error: unable to install tare")
 	}
 
@@ -185,10 +181,10 @@ func (h *ScalesHandler) GetState(client pb.ApiCallerScaleClient) {
 	if err != nil {
 		return
 	}
-	parser.FillResponseStruct(str.Raw(), reflect.ValueOf(&str).Elem())
-	if str.Raw().Meta.CommandCode == scale.Responses["CMD_ACK_STATE"] {
+	parser.MakeResponse(str.Raw(), reflect.ValueOf(&str).Elem())
+	if str.Raw().Meta.CommandCode == converter.Responses["CMD_ACK_STATE"] {
 		h.logger.Println("Get massa command completed successfully")
-	} else if str.Raw().Meta.CommandCode == scale.Responses["CMD_ERROR"] {
+	} else if str.Raw().Meta.CommandCode == converter.Responses["CMD_ERROR"] {
 		h.logger.Println("command execution error: unable to install tare")
 	}
 
